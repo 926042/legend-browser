@@ -113,6 +113,7 @@ const legends = [ // stances: i is the stat being increased, stances[i] is the s
     { name: 'Qinghua & Baobao',  weapons: ['cannon', 'orb'],          stats: [5, 4, 5, 8],   stances: [1, 3, 0, 2, [1, 3], [0, 3], [3, 3], [0, 2]], groups: ['Book Club', '"Bot" Bot', 'Hat Wearer', 'Outer Space', 'Pet Owner']                                    },
 ];
 
+const legends_wrapper_el = document.querySelector('.legends_wrapper');
 const body_el = document.querySelector('body');
 
 const get_legend = (el) => legends[Number(el.children[0].dataset.legend_no)];
@@ -275,8 +276,7 @@ function toggle_sort_option_state(e) {
         if (cycle_sort_mode(option)) {
             option.style.backgroundImage = `url(images/icon/sort_${option.dataset.sort_option}_${option.dataset.sort_mode}.png)`;
         }
-    }
-    else {
+    } else {
         for (const sort_option_el of sort_options_container_el.children) {
             sort_option_el.classList.remove('option_active');
             sort_option_el.classList.add('option_inactive');
@@ -370,6 +370,7 @@ function create_weapon_filter_option(weapon) {
     return filter_option_el;
 }
 
+
 function create_legend_icon(i) {
     const icon_container_el = document.createElement('div');
     icon_container_el.classList.add('legend_icon_container')
@@ -383,43 +384,45 @@ function create_legend_icon(i) {
 
     icon_el.addEventListener('click', () => update_legend_card(i))
 
+    
+    
     icon_container_el.appendChild(icon_el);
-
+    
     // show legend info
     icon_container_el.addEventListener('mouseover', () => {
         icon_el.style.backgroundSize = '115%';
-
+        
         const info_container_el = document.createElement('div');
         info_container_el.classList.add('legend_info_container');
-
-        const icon_rect = icon_el.getBoundingClientRect();
-        info_container_el.style.left = window.scrollX + icon_rect.left + icon_rect.width - 3 + 'px';
-        info_container_el.style.top = window.scrollY + icon_rect.top + 'px'; 
         
         const weapons_el = create_legend_weapon_info(i);
         const stats_el = create_legend_stats_info(i);
         
+        
+        const icon_rect = icon_el.getBoundingClientRect();
+        const wrapper_rect = legends_wrapper_el.getBoundingClientRect();
+        
+        info_container_el.style.left = icon_rect.left + icon_rect.width - wrapper_rect.left - 3 + 'px';
+        info_container_el.style.top = legends_wrapper_el.scrollTop + icon_rect.top - wrapper_rect.top + 'px'; 
+        
         info_container_el.appendChild(stats_el);
         info_container_el.appendChild(weapons_el);
-        
-        body_el.appendChild(info_container_el);
-        
+        legends_wrapper_el.appendChild(info_container_el);
+
         const rect = info_container_el.getBoundingClientRect();
-        // console.log(rect)
-        if (rect.width + rect.x > window.innerWidth) {
-            info_container_el.style.removeProperty('left');
-            info_container_el.style.right = (window.innerWidth - icon_rect.left) - 3 + 'px'
+        
+        if (rect.width + rect.x - wrapper_rect.x > wrapper_rect.width || rect.width + rect.x > window.innerWidth) {
+            info_container_el.style.left = icon_rect.left - rect.width - wrapper_rect.left + 3 + 'px'
             info_container_el.classList.add('reversed');
 
             icon_el.style.borderRadius = '0 5px 5px 0'
         } else {
             icon_el.style.borderRadius = '5px 0 0 5px'
         }
-        
     });
     // hide legend info
     icon_container_el.addEventListener('mouseout', () => {
-        icon_el.style.backgroundSize = '103%';
+        icon_el.style.removeProperty('background-size');
 
         const info_container_el = document.querySelector('.legend_info_container');
         info_container_el.remove();
@@ -502,9 +505,9 @@ function create_legend_card(legend_index) {
         stat_icon_el.addEventListener('click', () => cycle_stance(stat_icon_el, legend_index, stat_index));
         
         const stat_value = legends[legend_index].stats[stat_index];
-        const stat_value_el = document.createElement('div');
+        const stat_value_el = document.createElement('img');
         stat_value_el.classList.add('legend_card_stat_value');
-        stat_value_el.style.backgroundImage = `url(images/stat/${stat_value}.png)`;
+        stat_value_el.src = `images/stat/${stat_value}.png`;
         stat_value_el.addEventListener('click', () => cycle_stance(stat_icon_el, legend_index, stat_index));
         
         icons_container_el.appendChild(stat_icon_el);
@@ -567,14 +570,14 @@ function cycle_stance(stat_icon_el, legend_index, stat_index) {
     if (is_active) { // make super stance
         clear_stance(card_info_el, legend_index);
 
-        stat_icon_el.style.backgroundImage = `url(images/icon/sort_by_stat_${stat_index}+.png)`;
+        stat_icon_el.src = `images/icon/sort_by_stat_${stat_index}+.png`;
         stat_icon_el.classList.remove('stance_active');
         stat_icon_el.classList.add('super_stance_active');
         
         change_stance(card_info_el, legend_index, stat_index, true);
         
     } else if (super_stance_active) { // make inactive
-        stat_icon_el.style.backgroundImage = `url(images/icon/sort_by_stat_${stat_index}.png)`;
+        stat_icon_el.src = `images/icon/sort_by_stat_${stat_index}.png`;
         stat_icon_el.classList.remove('super_stance_active');
         stat_icon_el.classList.add('stance_inactive');
         
@@ -583,7 +586,7 @@ function cycle_stance(stat_icon_el, legend_index, stat_index) {
     } else { // make active
         clear_stance(card_info_el, legend_index)
         
-        stat_icon_el.style.backgroundImage = `url(images/icon/sort_by_stat_${stat_index}.png)`;
+        stat_icon_el.src = `images/icon/sort_by_stat_${stat_index}.png`;
         stat_icon_el.classList.remove('stance_inactive');
         stat_icon_el.classList.add('stance_active');
 
@@ -600,16 +603,16 @@ function change_stance(card_info_el, legend_index, increase_index, is_super_stan
         const decrease_indexes = legend.stances[increase_index + 4];
     
         for (let i = 0; i < 4; i++) { // clear all stance changes
-            stat_value_els[i].style.backgroundImage = `url(images/stat/${legend.stats[i]}.png)`;
+            stat_value_els[i].src = `images/stat/${legend.stats[i]}.png`;
         }
 
-        stat_value_els[increase_index].style.backgroundImage = `url(images/stat/${legend.stats[increase_index]}+2.png)`;
+        stat_value_els[increase_index].src = `images/stat/${legend.stats[increase_index]}+2.png`;
 
         if (decrease_indexes[0] === decrease_indexes[1]) {
-            stat_value_els[decrease_indexes[0]].style.backgroundImage = `url(images/stat/${legend.stats[decrease_indexes[0]]}-2.png)`;
+            stat_value_els[decrease_indexes[0]].src = `images/stat/${legend.stats[decrease_indexes[0]]}-2.png`;
         } else {
             for (const index of decrease_indexes) {
-                stat_value_els[index].style.backgroundImage = `url(images/stat/${legend.stats[index]}-1.png)`;
+                stat_value_els[index].src = `images/stat/${legend.stats[index]}-1.png`;
             }
         }
 
@@ -619,10 +622,10 @@ function change_stance(card_info_el, legend_index, increase_index, is_super_stan
     const decrease_index = legend.stances[increase_index];
 
     for (let i = 0; i < 4; i++) { // clear all stance changes
-        stat_value_els[i].style.backgroundImage = `url(images/stat/${legend.stats[i]}.png`;
+        stat_value_els[i].src = `images/stat/${legend.stats[i]}.png`;
     }
-    stat_value_els[increase_index].style.backgroundImage = `url(images/stat/${legend.stats[increase_index]}+1.png)`;
-    stat_value_els[decrease_index].style.backgroundImage = `url(images/stat/${legend.stats[decrease_index]}-1.png)`;
+    stat_value_els[increase_index].src = `images/stat/${legend.stats[increase_index]}+1.png`;
+    stat_value_els[decrease_index].src = `images/stat/${legend.stats[decrease_index]}-1.png`;
 }
 function clear_stance(card_info_el, legend_index) {
     const stat_icon_els = [...card_info_el.children[0].children];
@@ -640,7 +643,7 @@ function clear_stance(card_info_el, legend_index) {
     const legend = legends[legend_index];
     const stat_value_els = [...card_info_el.children[1].children];
     for (let i = 0; i < 4; i++) { // clear all stance changes
-        stat_value_els[i].style.backgroundImage = `url(images/stat/${legend.stats[i]}.png`;
+        stat_value_els[i].src = `images/stat/${legend.stats[i]}.png`;
     }
 }
 
@@ -676,3 +679,9 @@ pick_button_el.addEventListener('click', pick_from_selection)
 
 update_legend_card(0);
 update_legend_roster();
+
+document.addEventListener('contextmenu', (e) => {
+    if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+    }
+});
