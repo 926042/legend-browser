@@ -633,7 +633,7 @@ function clear_stance(card_info_el, legend_index) {
         const stat_el = stat_icon_els[i];
 
         if (stat_el.classList.contains('stance_active') || stat_el.classList.contains('super_stance_active')) {
-            stat_el.src = `images/icon/sort_by_stat_${i}.png`;
+            stat_el.style.backgroundImage = `url(images/icon/sort_by_stat_${i}.png)`;
             stat_el.classList.toggle('stance_active', false);
             stat_el.classList.toggle('super_stance_active', false);
             stat_el.classList.add('stance_inactive');
