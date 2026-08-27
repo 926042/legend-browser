@@ -570,14 +570,14 @@ function cycle_stance(stat_icon_el, legend_index, stat_index) {
     if (is_active) { // make super stance
         clear_stance(card_info_el, legend_index);
 
-        stat_icon_el.src = `images/icon/sort_by_stat_${stat_index}+.png`;
+        stat_icon_el.style.backgroundImage = `url(images/icon/sort_by_stat_${stat_index}+.png)`;
         stat_icon_el.classList.remove('stance_active');
         stat_icon_el.classList.add('super_stance_active');
         
         change_stance(card_info_el, legend_index, stat_index, true);
         
     } else if (super_stance_active) { // make inactive
-        stat_icon_el.src = `images/icon/sort_by_stat_${stat_index}.png`;
+        stat_icon_el.style.backgroundImage = `url(images/icon/sort_by_stat_${stat_index}.png)`;
         stat_icon_el.classList.remove('super_stance_active');
         stat_icon_el.classList.add('stance_inactive');
         
@@ -586,7 +586,7 @@ function cycle_stance(stat_icon_el, legend_index, stat_index) {
     } else { // make active
         clear_stance(card_info_el, legend_index)
         
-        stat_icon_el.src = `images/icon/sort_by_stat_${stat_index}.png`;
+        stat_icon_el.style.backgroundImage = `url(images/icon/sort_by_stat_${stat_index}.png)`;
         stat_icon_el.classList.remove('stance_inactive');
         stat_icon_el.classList.add('stance_active');
 
