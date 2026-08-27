@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Brawlhalla Legend Browser </title>
+    <link rel="icon" type="image/png" href="images/misc/favicon.png">
+    <link rel="stylesheet" href="legend_browser.css">
+</head>
+<body>
+    <div class="background_image"></div>
+    <div class="main">
+        <div class="card_container">
+            <div class="pick_button"> Pick from selection </div>
+        </div>
+        <div class="help_icon option_inactive"></div>
+        <div class="help_text">
+            To filter by quest group, select a quest group from the dropdown.
+            Click a quest group badge to remove it.<br>
+            To sort, select one of the sort options on the left.<br>
+            To filter, select one or more weapons to filter for.
+            Left click a weapon to show legends that only have that weapon, right click
+            to show legends that have one of those weapons.
+        </div>
+        <div class="main_content">
+            <div class="option_containers">
+                <div class="option_container group_filter_container">
+                    <div class="group_filter_title"> Group </div>
+                    <div class="group_container">
+                        <select id="group_select">
+                            <option value="" selected disabled hidden>Pick quest group</option>
+                        </select>
+                        <div class="group_bar"></div>
+                    </div>
+                </div>
+                <div class="option_container sort_option_container">
+                    <div class="sort_option_title"> Sort </div>
+                    <div class="sort_options"></div>
+                </div>
+                <div class="option_container filter_option_container">
+                    <div class="filter_option_title"> Filter </div>
+                    <div class="filter_options"></div>
+                </div>
+                
+            </div>
+            <div class="legend_container"></div>
+        </div>
+    </div> 
+
+    <script src="legend_browser.js"></script>
+</body>
+</html>
