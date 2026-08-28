@@ -434,6 +434,7 @@ h1 {
 }
 
 .legends_wrapper {
+    width: 100%;
     position: relative;
     overflow-y: auto;
 }
